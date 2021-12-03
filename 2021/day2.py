@@ -1,5 +1,5 @@
 def part_1():
-    file = open("sonarInput.txt", "r")
+    file = open("input.txt", "r")
     cmd = {
         'forward': lambda h, d, v: (h + v, d),
         'down': lambda h, d, v: (h, d + v),
@@ -15,7 +15,7 @@ def part_1():
 
 
 def part_2():
-    file = open("sonarInput.txt", "r")
+    file = open("input.txt", "r")
     cmd = {
         'forward': lambda h, d, a, v: (h + v, d + a * v, a),
         'down': lambda h, d, a, v: (h, d, a + v),

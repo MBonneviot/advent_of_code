@@ -2,7 +2,7 @@ def part_1():
     def solution_1():
         import numpy as np
 
-        file = open("sonarInput.txt", "r")
+        file = open("input.txt", "r")
         line_length = len(file.readline().strip())
         state = np.zeros(line_length)
         nbLines = 0
@@ -22,7 +22,7 @@ def part_1():
 
         def to_int(array): return int(''.join(array), base=2)
 
-        lines = open("sonarInput.txt", "r").readlines()
+        lines = open("input.txt", "r").readlines()
         gamma = to_int([compute_index(lines, i, lambda a, b: str(int(a > b))) for i in range(len(lines[0]) - 1)])
         epsilon = to_int([compute_index(lines, i, lambda a, b: str(int(a < b))) for i in range(len(lines[0]) - 1)])
         print(gamma * epsilon)
@@ -51,7 +51,7 @@ def part_2():
             filtered_lines = list(filter(lambda x: x[:i + 1] == ''.join(rating), filtered_lines))
         return to_int(rating)
 
-    lines = open("sonarInput.txt", "r").readlines()
+    lines = open("input.txt", "r").readlines()
 
     print(compute(lines, lambda a, b: '1' if a >= b else '0') * compute(lines, lambda a, b: '0' if a >= b else '1'))
 

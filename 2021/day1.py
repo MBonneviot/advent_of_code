@@ -1,5 +1,5 @@
 def part_1():
-    file = open("sonarInput.txt", "r")
+    file = open("input.txt", "r")
     previous_depth = 0
     nbr_increase = -1
     for line in file:
@@ -13,7 +13,7 @@ def part_1():
 
 def part_2():
     from collections import deque
-    file = open("sonarInput.txt", "r")
+    file = open("input.txt", "r")
     previous_depths = deque(maxlen=3)
     nbr_increase = -3
     for line in file:
