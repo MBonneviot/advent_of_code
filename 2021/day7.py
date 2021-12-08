@@ -21,5 +21,6 @@ def part_2():
     result = [fuel_used(p, h_positions) for p in range(0, max_pos)]
     print(min(result))
 
-#part_1()
+
+part_1()
 part_2()
