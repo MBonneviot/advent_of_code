@@ -8,48 +8,55 @@ def part_1():
 
 
 def par_2():
-    def decode_line(line, to_decode):
-        easy_len = {2, 4, 3, 7}
-        easy_digits = list(filter(lambda w: len(w) in easy_len, line))
-        mapping = {(1 if len(d) == 2 else 4 if len(d) == 4 else 7 if len(d) == 3 else 8): d for d in easy_digits}
+    from bitarray import bitarray
+    from math import pow
 
-        nine_list = list(filter(lambda w: len(w.intersection(mapping[7].union(mapping[4]))) == len(
-            mapping[7].union(mapping[4])) and w not in mapping.values(), line))
-        if nine_list:
-            mapping[9] = nine_list[0]
+    def to_bitarray(word):
+        encoded_word = bitarray('0000000')
+        for c in word:
+            encoded_word[ord(c) - ord('a')] = 1
+        return encoded_word
 
-        six_list = list(
-            filter(lambda w: mapping[1].union(w) == mapping[8] and w not in mapping.values() and len(w) == 6, line))
-        if six_list:
-            mapping[6] = six_list[0]
+    def decode_line(uniques, code):
+        mapping = dict()
+        for value in uniques:
+            # 1
+            if value.count() == 2:
+                mapping[1] = value
+            # 4
+            if value.count() == 4:
+                mapping[4] = value
+            # 7
+            if value.count() == 3:
+                mapping[7] = value
+            # 8
+            if value.count() == 7:
+                mapping[8] = value
 
-        zero_list = list(
-            filter(lambda w: mapping[4].union(w) == mapping[8] and w not in mapping.values() and len(w) == 6, line))
-        if zero_list:
-            mapping[0] = zero_list[0]
+        for value in uniques:
+            # 0, 6 9
+            if value.count() == 6:
+                if value | mapping[1] == mapping[8]:
+                    mapping[6] = value
+                elif value | mapping[4] == mapping[8]:
+                    mapping[0] = value
+                else:
+                    mapping[9] = value
+            # 2, 3, 5
+            if value.count() == 5:
+                if value | mapping[4] == mapping[8]:
+                    mapping[2] = value
+                elif value | mapping[1] == value:
+                    mapping[3] = value
+                else:
+                    mapping[5] = value
 
-        five_list = list(
-            filter(lambda w: len(mapping[6].intersection(w)) == 5 and w not in mapping.values() and len(w) == 5, line))
-        if five_list:
-            mapping[5] = five_list[0]
-
-        three_list = list(
-            filter(lambda w: mapping[4].union(w) == mapping[9] and w not in mapping.values(), line))
-        if three_list:
-            mapping[3] = three_list[0]
-
-        two_list = list(
-            filter(lambda w: len(mapping[3].intersection(w)) == 4 and w not in mapping.values() and len(w) == 5, line))
-        if two_list:
-            mapping[2] = two_list[0]
-
-        decoder = {''.join(sorted(i[1])): i[0] for i in mapping.items()}
-        code = decoder[to_decode[0]]*1000 + decoder[to_decode[1]]*100 + decoder[to_decode[2]]*10 + decoder[to_decode[3]]
-        return code
+        decoder = {str(m[1]): m[0] for m in mapping.items()}
+        return int(sum([decoder[code[i]] * pow(10, 3 - i) for i in range(0, 4)]))
 
     lines = [l.split() for l in open("input.txt", "r").readlines()]
-    processed_line = [list(map(lambda w: set(w), filter(lambda w: w != '|', l))) for l in lines]
-    print(sum([decode_line(l, [''.join(sorted(i)) for i in l[10:]]) for l in processed_line]))
+    unique_and_codes = [([to_bitarray(c) for c in l[:10]], [str(to_bitarray(c)) for c in l[11:]]) for l in lines]
+    print(sum([decode_line(l[0], l[1]) for l in unique_and_codes]))
 
 
 part_1()
