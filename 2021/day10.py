@@ -1,97 +1,85 @@
 def part_1():
-    import numpy as np
+    from collections import deque
 
-    def neighbours(i, j, energy_map):
-        num_rows, num_cols = energy_map.shape
-        area = {(x, y) for y in range(max(0, j - 1), min(num_rows, j + 2)) for x in
-                range(max(0, i - 1), min(num_cols, i + 2))}
-        area.remove((i, j))
-        return area
+    matching_chars = {
+        '(': ')',
+        '[': ']',
+        '{': '}',
+        '<': '>'
+    }
 
-    def update_due_to_flash(flashers, energy_map):
-        for flasher in flashers:
-            for neighbour in neighbours(flasher[0], flasher[1], energy_map):
-                energy_map[neighbour[1], neighbour[0]] += 1
+    scores = {
+        '': 0,
+        ')': 3,
+        ']': 57,
+        '}': 1197,
+        '>': 25137
+    }
 
-    def get_flash(energy_map, flashers):
-        new_flashers = list()
-        num_rows, num_cols = energy_map.shape
-        for i in range(0, num_cols):
-            for j in range(0, num_rows):
-                if (i, j) not in flashers and energy_map[j][i] > 9:
-                    new_flashers.append((i, j))
-                    flashers.add((i, j))
+    def invalid_char(line):
+        buffer = deque(line.popleft())
+        while line:
+            char = line.popleft()
+            # chunk opening
+            if char in matching_chars.keys():
+                buffer.append(char)
+            # chunk close
+            elif char == matching_chars.get(buffer[-1]):
+                buffer.pop()
+            # invalid
+            else:
+                return char
+        return ''
 
-        return new_flashers
+    lines = [deque(l.strip()) for l in open("input.txt", "r").readlines()]
+    invalid_chars = [invalid_char(l) for l in lines]
+    print(sum([scores[c] for c in invalid_chars]))
 
-    def reset_flasher(x):
-        return x if x < 10 else 0
-
-    lines = open("input.txt", "r").readlines()
-    energy_map = np.array([[int(i) for i in l.strip()] for l in lines])
-
-    nb_flash = 0
-    for step in range(0, 100):
-        flashers = set()
-        energy_map = np.vectorize(reset_flasher)(energy_map)
-        energy_map += 1
-        while True:
-            new_flashers = get_flash(energy_map, flashers)
-            update_due_to_flash(new_flashers, energy_map)
-            flashers.union(new_flashers)
-            if not len(new_flashers):
-                break
-        nb_flash += len(flashers)
-
-    print(nb_flash)
 
 def part_2():
-    import numpy as np
+    from collections import deque
 
-    def neighbours(i, j, energy_map):
-        num_rows, num_cols = energy_map.shape
-        area = {(x, y) for y in range(max(0, j - 1), min(num_rows, j + 2)) for x in
-                range(max(0, i - 1), min(num_cols, i + 2))}
-        area.remove((i, j))
-        return area
+    matching_chars = {
+        '(': ')',
+        '[': ']',
+        '{': '}',
+        '<': '>'
+    }
 
-    def update_due_to_flash(flashers, energy_map):
-        for flasher in flashers:
-            for neighbour in neighbours(flasher[0], flasher[1], energy_map):
-                energy_map[neighbour[1], neighbour[0]] += 1
+    scores = {
+        '': 0,
+        ')': 1,
+        ']': 2,
+        '}': 3,
+        '>': 4
+    }
 
-    def get_flash(energy_map, flashers):
-        new_flashers = list()
-        num_rows, num_cols = energy_map.shape
-        for i in range(0, num_cols):
-            for j in range(0, num_rows):
-                if (i, j) not in flashers and energy_map[j][i] > 9:
-                    new_flashers.append((i, j))
-                    flashers.add((i, j))
+    def analyse_line(line):
+        buffer = deque(line.popleft())
+        while line:
+            char = line.popleft()
+            # chunk opening
+            if char in matching_chars.keys():
+                buffer.append(char)
+            # chunk close
+            elif char == matching_chars.get(buffer[-1]):
+                buffer.pop()
+            # invalid
+            else:
+                return char, ''
+        return '', [matching_chars[buffer.pop()] for i in range(0, len(buffer))]
 
-        return new_flashers
+    def score(seed, line):
+        if line:
+            return score(5 * seed + scores[line[0]], line[1:])
+        return seed
 
-    def reset_flasher(x):
-        return x if x < 10 else 0
+    lines = [deque(l.strip()) for l in open("input.txt", "r").readlines()]
+    analysed_lines = [analyse_line(l) for l in lines]
 
-    lines = open("input.txt", "r").readlines()
-    energy_map = np.array([[int(i) for i in l.strip()] for l in lines])
-
-    step = 0
-    while True:
-        step += 1
-        flashers = set()
-        energy_map = np.vectorize(reset_flasher)(energy_map)
-        energy_map += 1
-        while True:
-            new_flashers = get_flash(energy_map, flashers)
-            update_due_to_flash(new_flashers, energy_map)
-            flashers.union(new_flashers)
-            if not len(new_flashers):
-                break
-        if len(flashers) == energy_map.size:
-            break
-    print(step)
+    incomplete_lines = list(map(lambda x: score(0, x[1]), filter(lambda x: x[1], analysed_lines)))
+    incomplete_lines.sort()
+    print(incomplete_lines[int(len(incomplete_lines) / 2)])
 
 
 part_1()
