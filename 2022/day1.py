@@ -12,6 +12,7 @@ def part_1():
 
     print(max_cal)
 
+
 def part_2():
     file = open("input.txt", "r")
     elve_items = list()
@@ -27,7 +28,8 @@ def part_2():
 
     global_elves_calories.sort(reverse=True)
     print(global_elves_calories)
-    print(global_elves_calories[0]+global_elves_calories[1]+global_elves_calories[2])
+    print(global_elves_calories[0] + global_elves_calories[1] + global_elves_calories[2])
 
-#part_1()
+
+part_1()
 part_2()
