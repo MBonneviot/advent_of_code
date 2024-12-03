@@ -1,7 +1,7 @@
 from collections import Counter
 
 
-def to_int(l: list[int]):
+def to_int(l: list[str]) -> list[int]:
     return [int(c) for c in l]
 
 
