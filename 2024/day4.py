@@ -66,5 +66,5 @@ def part_2():
     print(counter)
 
 
-#part_1()
+part_1()
 part_2()
